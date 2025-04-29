@@ -103,16 +103,55 @@ void header() {
     printf("--------------\n");
 }
 
+int is_valid_name(const char *name) {
+    for (int i = 0; name[i] != '\0'; i++) {
+        if (!isalpha(name[i])) return 0;
+    }
+    return 1;
+}
+
+int is_valid_score(int score) {
+    return score >= 1 && score <= 21;
+}
+
+int exactly_one_is_21(int s1, int s2) {
+    return (s1 == 21 && s2 < 21) || (s2 == 21 && s1 < 21);
+}
+
 void add() {
     setColor(10);
     printf("Add match\n");
     resetColor();
     printf("(For all matches, 21 points are required for a win)\n\n");
+
+    char name1[25], name2[25];
+    int score1, score2;
+
     printf("Enter the name and score of Player 1 (name score): ");
-    scanf("%s %d", matches[matches_count].name1, &matches[matches_count].points1);
+    if (scanf("%24s %d", name1, &score1) != 2) {
+        printf("Invalid input\n");
+        return;
+    }
+
     printf("Enter the name and score of Player 2 (name score): ");
-    scanf("%s %d", matches[matches_count].name2, &matches[matches_count].points2);
+    if (scanf("%24s %d", name2, &score2) != 2) {
+        printf("Invalid input\n");
+        return;
+    }
+
+    if (!is_valid_name(name1) || !is_valid_name(name2) ||
+        !is_valid_score(score1) || !is_valid_score(score2) ||
+        !exactly_one_is_21(score1, score2)) {
+        printf("Invalid input\n");
+        return;
+    }
+
     Match *m = &matches[matches_count++];
+    strcpy(m->name1, name1);
+    strcpy(m->name2, name2);
+    m->points1 = score1;
+    m->points2 = score2;
+
     save_match(m);
     info_in(matches, matches_count, players, &player_count);
 }
